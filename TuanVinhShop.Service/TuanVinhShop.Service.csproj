@@ -40,7 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProductService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TuanVinhShop.Data\TuanVinhShop.Data.csproj">
+      <Project>{9acaea2c-761f-4d89-ae77-df7796c6f609}</Project>
+      <Name>TuanVinhShop.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TuanVinhShop.Model\TuanVinhShop.Model.csproj">
+      <Project>{48aaa7c3-4332-4554-bcda-9b1d76d24182}</Project>
+      <Name>TuanVinhShop.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
