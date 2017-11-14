@@ -5,7 +5,7 @@ namespace TeduShop.Data
 {
     public class TuanVinhShopDbContext : DbContext
     {
-        public TuanVinhShopDbContext() : base("TuanVinhShopConnection")
+        public TuanVinhShopDbContext() : base("TuanVinhShop")
         {
             this.Configuration.LazyLoadingEnabled = false;
         }

@@ -54,6 +54,11 @@
     <Compile Include="Infrastructure\IUnitOfWork.cs" />
     <Compile Include="Infrastructure\RepositoryBase.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
+    <Compile Include="Migrations\201711140326203_TheFirstTimeMigration.cs" />
+    <Compile Include="Migrations\201711140326203_TheFirstTimeMigration.Designer.cs">
+      <DependentUpon>201711140326203_TheFirstTimeMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ContactRepository.cs" />
     <Compile Include="Repositories\ErrorRepository.cs" />
@@ -87,6 +92,11 @@
       <Project>{48aaa7c3-4332-4554-bcda-9b1d76d24182}</Project>
       <Name>TuanVinhShop.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201711140326203_TheFirstTimeMigration.resx">
+      <DependentUpon>201711140326203_TheFirstTimeMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
