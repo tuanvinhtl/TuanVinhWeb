@@ -56,7 +56,7 @@ namespace TuanVinhShop.Service
 
         public void Update(Post post)
         {
-            _postRepository.Update();
+            _postRepository.Update(post);
         }
     }
 }

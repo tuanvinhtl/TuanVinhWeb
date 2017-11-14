@@ -35,7 +35,7 @@ namespace TuanVinhShop.Service
 
         public IEnumerable<PostCategory> GetAll()
         {
-           return _postCategoryRepository.GetAll();
+            return _postCategoryRepository.GetAll();
         }
 
         public PostCategory GetById(int id)
