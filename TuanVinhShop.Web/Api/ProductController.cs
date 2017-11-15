@@ -8,6 +8,7 @@ using TuanVinhShop.Web.Inflastructure.Core;
 namespace TuanVinhShop.Web.Api
 {
     [RoutePrefix("api/product")]
+    [AllowAnonymous]
     public class ProductController : ApiControllerBase
     {
         IProductService _productService;
@@ -15,7 +16,7 @@ namespace TuanVinhShop.Web.Api
         {
             this._productService = productService;
         }
-
+        
         [Route("getall")]
         public HttpResponseMessage GetAll(HttpRequestMessage request)
         {
