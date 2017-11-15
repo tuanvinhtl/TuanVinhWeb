@@ -298,3 +298,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 TuanVinhShop.Data/ConnectionString.config
+TuanVinhShop.Web/ConnectionString.config
