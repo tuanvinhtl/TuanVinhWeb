@@ -7,6 +7,7 @@ using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.Http;
+using TuanVinhShop.Web.Mappings;
 
 namespace TuanVinhShop.Web
 {
@@ -17,6 +18,7 @@ namespace TuanVinhShop.Web
             // Code that runs on application startup
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            ConfigAutoMapper.ConfigMap();
             RouteConfig.RegisterRoutes(RouteTable.Routes);            
         }
     }
