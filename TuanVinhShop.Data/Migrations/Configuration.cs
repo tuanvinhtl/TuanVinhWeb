@@ -1,10 +1,12 @@
 namespace TuanVinhShop.Data.Migrations
 {
+    using Microsoft.AspNet.Identity;
+    using Microsoft.AspNet.Identity.EntityFramework;
     using System;
     using System.Collections.Generic;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using TeduShop.Data;
     using TuanVinhShop.Model.Models;
 
     internal sealed class Configuration : DbMigrationsConfiguration<TeduShop.Data.TuanVinhShopDbContext>
@@ -18,6 +20,7 @@ namespace TuanVinhShop.Data.Migrations
         {
             AddProductCategory(context);
             AddProduct(context);
+            CreateUser(context);
         }
         private void AddProductCategory(TeduShop.Data.TuanVinhShopDbContext context)
         {
@@ -70,6 +73,38 @@ namespace TuanVinhShop.Data.Migrations
                 };
                 context.Products.AddRange(listProduct);
                 context.SaveChanges();
+            }
+        }
+        private void CreateUser(TuanVinhShopDbContext context)
+        {
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new TuanVinhShopDbContext()));
+            if (manager.Users.Count() == 0)
+            {
+                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new TuanVinhShopDbContext()));
+
+                var user = new ApplicationUser()
+                {
+                    UserName = "admin",
+                    Email = "tuanvinhtl@gmail.com",
+                    EmailConfirmed = true,
+                    BirthDay = DateTime.Now,
+                    FullName = "Nguyen Tuan Vinh",
+                    Avatar = "/assets/images/img.jpg",
+                };
+                if (manager.Users.Count(x => x.UserName == "admin") == 0)
+                {
+                    manager.Create(user, "123456$");
+
+                    if (!roleManager.Roles.Any())
+                    {
+                        roleManager.Create(new IdentityRole { Name = "Admin"});
+                        roleManager.Create(new IdentityRole { Name = "Member"});
+                    }
+
+                    var adminUser = manager.FindByName("admin");
+
+                    manager.AddToRoles(adminUser.Id, new string[] { "Admin", "Member" });
+                }
             }
         }
     }

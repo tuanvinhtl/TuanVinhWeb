@@ -1,9 +1,10 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
 using TuanVinhShop.Model.Models;
 
 namespace TeduShop.Data
 {
-    public class TuanVinhShopDbContext : DbContext
+    public class TuanVinhShopDbContext : IdentityDbContext<ApplicationUser>
     {
         public TuanVinhShopDbContext() : base("TuanVinhShop")
         {
@@ -32,8 +33,12 @@ namespace TeduShop.Data
 
         protected override void OnModelCreating(DbModelBuilder builder)
         {
-            
+            builder.Entity<IdentityUserRole>().HasKey(r => new { r.RoleId, r.UserId });
+            builder.Entity<IdentityUserLogin>().HasKey(r => r.UserId);
         }
-
+        public static TuanVinhShopDbContext Create()
+        {
+            return new TuanVinhShopDbContext();
+        }
     }
 }
