@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity;
 using TuanVinhShop.Model.Models;
 using System.Web;
 using Microsoft.Owin.Security.DataProtection;
+using Microsoft.Owin.Cors;
 
 [assembly: OwinStartup(typeof(TuanVinhShop.Web.App_Start.Startup))]
 
@@ -24,6 +25,7 @@ namespace TuanVinhShop.Web.App_Start
         public void Configuration(IAppBuilder app)
         {
             ConfigAutofac(app);
+            app.UseCors(CorsOptions.AllowAll);
             ConfigureAuth(app);
         }
         private void ConfigAutofac(IAppBuilder app)

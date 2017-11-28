@@ -22,6 +22,7 @@ namespace TuanVinhShop.Web.Api
 
         [Route("getall")]
         [HttpGet]
+        [AllowAnonymous]
         public HttpResponseMessage GetAll(HttpRequestMessage request)
         {
             return CreateHttpResponse(request, () =>
