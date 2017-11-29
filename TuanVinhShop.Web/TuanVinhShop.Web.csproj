@@ -185,6 +185,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Inflastructure\Core\ApiControllerBase.cs" />
+    <Compile Include="Inflastructure\Core\PaginationSet.cs" />
     <Compile Include="Inflastructure\Extensions\EntityExtension.cs" />
     <Compile Include="Mappings\ConfigAutoMapper.cs" />
     <Compile Include="Models\AcountLogin.cs" />

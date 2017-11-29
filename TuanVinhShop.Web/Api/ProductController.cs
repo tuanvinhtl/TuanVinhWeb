@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -32,6 +34,36 @@ namespace TuanVinhShop.Web.Api
                 var resultGetAll = _productService.GetAll();
                 var mapperObject = Mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(resultGetAll);
                 response = request.CreateResponse(HttpStatusCode.OK, mapperObject);
+
+                return response;
+            });
+        }
+
+        [Route("getPagination")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetPagination(HttpRequestMessage request, string keyword, int page, int pageSize=20)
+        {
+            return CreateHttpResponse(request, () =>
+            {
+                
+                HttpResponseMessage response = null;
+                int totalRow = 0;
+
+                var model = _productService.GetPagin(keyword,page,pageSize, out totalRow);
+ 
+                var mapperObject = Mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(model);
+
+                var paginationSet = new PaginationSet<ProductViewModel>()
+                {
+                    Items = mapperObject,
+                    PageIndex = page,
+                    PageSize=pageSize,
+                    TotalRows = totalRow,
+                    TotalPages = (int)Math.Ceiling((decimal)totalRow / pageSize)
+                };
+
+                response = request.CreateResponse(HttpStatusCode.OK, paginationSet);
 
                 return response;
             });
