@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -10,16 +9,18 @@ using TuanVinhShop.Service;
 using TuanVinhShop.Web.Inflastructure.Core;
 using TuanVinhShop.Web.Inflastructure.Extensions;
 using TuanVinhShop.Web.Models;
+
 namespace TuanVinhShop.Web.Api
 {
-    [RoutePrefix("api/product")]
+    [RoutePrefix("api/productCategory")]
     [AllowAnonymous]
-    public class ProductController : ApiControllerBase
+    public class ProductCategoryController : ApiControllerBase
     {
-        IProductService _productService;
-        public ProductController(IErrorService errorService, IProductService productService) : base(errorService)
+        
+        IProductCategoryService _productCategoryService;
+        public ProductCategoryController(IErrorService errorService, IProductCategoryService productCategoryService) : base(errorService)
         {
-            this._productService = productService;
+            this._productCategoryService = productCategoryService;
         }
 
         [Route("getall")]
@@ -31,8 +32,8 @@ namespace TuanVinhShop.Web.Api
             {
                 HttpResponseMessage response = null;
 
-                var resultGetAll = _productService.GetAll();
-                var mapperObject = Mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(resultGetAll);
+                var resultGetAll = _productCategoryService.GetAll();
+                var mapperObject = Mapper.Map<IEnumerable<ProductCategory>, IEnumerable<ProductCategoryViewModel>>(resultGetAll);
                 response = request.CreateResponse(HttpStatusCode.OK, mapperObject);
 
                 return response;
@@ -42,23 +43,23 @@ namespace TuanVinhShop.Web.Api
         [Route("getPagination")]
         [HttpGet]
         [AllowAnonymous]
-        public HttpResponseMessage GetPagination(HttpRequestMessage request, string keyword, int page, int pageSize=20)
+        public HttpResponseMessage GetPagination(HttpRequestMessage request, string keyword, int page, int pageSize = 20)
         {
             return CreateHttpResponse(request, () =>
             {
-                
+
                 HttpResponseMessage response = null;
                 int totalRow = 0;
 
-                var model = _productService.GetPagin(keyword,page,pageSize, out totalRow);
- 
-                var mapperObject = Mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(model);
+                var model = _productCategoryService.GetPagin(keyword, page, pageSize, out totalRow);
 
-                var paginationSet = new PaginationSet<ProductViewModel>()
+                var mapperObject = Mapper.Map<IEnumerable<ProductCategory>, IEnumerable<ProductCategoryViewModel>>(model);
+
+                var paginationSet = new PaginationSet<ProductCategoryViewModel>()
                 {
                     Items = mapperObject,
                     PageIndex = page,
-                    PageSize=pageSize,
+                    PageSize = pageSize,
                     TotalRows = totalRow,
                     TotalPages = (int)Math.Ceiling((decimal)totalRow / pageSize)
                 };
@@ -71,7 +72,7 @@ namespace TuanVinhShop.Web.Api
 
         [Route("create")]
         [HttpPost]
-        public HttpResponseMessage Create(HttpRequestMessage request, ProductViewModel productVM)
+        public HttpResponseMessage Create(HttpRequestMessage request, ProductCategoryViewModel productVM)
         {
 
             return CreateHttpResponse(request, () =>
@@ -83,11 +84,11 @@ namespace TuanVinhShop.Web.Api
                 }
                 else
                 {
-                    Product product = new Product();
-                    product.UpdateProduct(productVM);
-                    var result = _productService.Add(product);
-                    var mapperResult = Mapper.Map<Product, ProductViewModel>(result);
-                    _productService.SaveChange();
+                    ProductCategory product = new ProductCategory();
+                    product.UpdateProductCategory(productVM);
+                    var result = _productCategoryService.Add(product);
+                    var mapperResult = Mapper.Map<ProductCategory, ProductCategoryViewModel>(result);
+                    _productCategoryService.SaveChange();
                     response = request.CreateResponse(HttpStatusCode.Created, mapperResult);
                 }
                 return response;
@@ -98,7 +99,7 @@ namespace TuanVinhShop.Web.Api
 
         [Route("update")]
         [HttpPut]
-        public HttpResponseMessage Update(HttpRequestMessage request, ProductViewModel productVM)
+        public HttpResponseMessage Update(HttpRequestMessage request, ProductCategoryViewModel productVM)
         {
             return CreateHttpResponse(request, () =>
             {
@@ -109,12 +110,12 @@ namespace TuanVinhShop.Web.Api
                 }
                 else
                 {
-                    var updateProduct = _productService.GetById(productVM.ID);
-                    updateProduct.UpdateProduct(productVM);
+                    var updateProduct = _productCategoryService.GetById(productVM.ID);
+                    updateProduct.UpdateProductCategory(productVM);
 
-                    _productService.Update(updateProduct);
-                    _productService.SaveChange();
-                    var mapper = Mapper.Map<Product, ProductViewModel>(updateProduct);
+                    _productCategoryService.Update(updateProduct);
+                    _productCategoryService.SaveChange();
+                    var mapper = Mapper.Map<ProductCategory, ProductCategoryViewModel>(updateProduct);
                     response = request.CreateResponse(HttpStatusCode.Created, mapper);
                 }
                 return response;
@@ -122,34 +123,16 @@ namespace TuanVinhShop.Web.Api
         }
 
         [Route("detele")]
-        [HttpDelete]
-        [AllowAnonymous]
-        public HttpResponseMessage Detele(HttpRequestMessage request, string id)
+        public HttpResponseMessage Detele(HttpRequestMessage request, int id)
         {
             return CreateHttpResponse(request, () =>
             {
                 HttpResponseMessage response = null;
 
-                var result = _productService.Delete(int.Parse(id));
-                _productService.SaveChange();
+                var result = _productCategoryService.Delete(id);
+                _productCategoryService.SaveChange();
                 response = request.CreateResponse(HttpStatusCode.OK, result);
 
-                return response;
-            });
-        }
-
-        [Route("getbyid/{id:int}")]
-        [HttpGet]
-        [AllowAnonymous]
-        public HttpResponseMessage GetById(HttpRequestMessage request,int id)
-        {
-            return CreateHttpResponse(request, () =>
-            {
-                HttpResponseMessage response = null;
-
-                var resultGetAll = _productService.GetById(id);
-                var mapperObject = Mapper.Map<Product, ProductViewModel>(resultGetAll);
-                response = request.CreateResponse(HttpStatusCode.OK, mapperObject);
                 return response;
             });
         }

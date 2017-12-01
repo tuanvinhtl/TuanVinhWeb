@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TeduShop.Data.Infrastructure;
 using TeduShop.Data.Repositories;
 using TuanVinhShop.Model.Models;
@@ -14,6 +15,8 @@ namespace TuanVinhShop.Service
         void Update(ProductCategory product);
         ProductCategory GetById(int id);
         void SaveChange();
+        IEnumerable<ProductCategory> GetPagin(string keyWord, int page, int pageSize, out int totalRow);
+       
     }
     public class ProductCategoryService : IProductCategoryService
     {
@@ -39,6 +42,17 @@ namespace TuanVinhShop.Service
         {
             return _productCategoryRepository.GetAll();
 
+        }
+        public IEnumerable<ProductCategory> GetPagin(string keyWord, int page, int pageSize, out int totalRow)
+        {
+            var query = _productCategoryRepository.GetAll();
+            if (!string.IsNullOrEmpty(keyWord))
+            {
+                query = query.Where(x => x.Name.Contains(keyWord));
+            }
+            var model = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            totalRow = query.Count();
+            return model;
         }
 
         public IEnumerable<ProductCategory> GetAll(string keyWord)
