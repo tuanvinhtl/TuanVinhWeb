@@ -11,7 +11,7 @@ using TuanVinhShop.Web.Inflastructure.Core;
 namespace TeduShop.Web.Controllers
 {
     [RoutePrefix("api/upload")]
-    [Authorize]
+    [AllowAnonymous]
     public class UploadController : ApiControllerBase
     {
         public UploadController(IErrorService errorService) : base(errorService)
@@ -20,6 +20,7 @@ namespace TeduShop.Web.Controllers
 
         [HttpPost]
         [Route("saveImage")]
+        [AllowAnonymous]
         public HttpResponseMessage SaveImage(string type = "")
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
