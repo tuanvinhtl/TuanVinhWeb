@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using TuanVinhShop.Model.Models;
 using TuanVinhShop.Service;
@@ -42,23 +45,23 @@ namespace TuanVinhShop.Web.Api
         [Route("getPagination")]
         [HttpGet]
         [AllowAnonymous]
-        public HttpResponseMessage GetPagination(HttpRequestMessage request, string keyword, int page, int pageSize=20)
+        public HttpResponseMessage GetPagination(HttpRequestMessage request, string keyword, int page, int pageSize = 20)
         {
             return CreateHttpResponse(request, () =>
             {
-                
+
                 HttpResponseMessage response = null;
                 int totalRow = 0;
 
-                var model = _productService.GetPagin(keyword,page,pageSize, out totalRow);
- 
+                var model = _productService.GetPagin(keyword, page, pageSize, out totalRow);
+
                 var mapperObject = Mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(model);
 
                 var paginationSet = new PaginationSet<ProductViewModel>()
                 {
                     Items = mapperObject,
                     PageIndex = page,
-                    PageSize=pageSize,
+                    PageSize = pageSize,
                     TotalRows = totalRow,
                     TotalPages = (int)Math.Ceiling((decimal)totalRow / pageSize)
                 };
@@ -141,7 +144,7 @@ namespace TuanVinhShop.Web.Api
         [Route("getbyid/{id:int}")]
         [HttpGet]
         [AllowAnonymous]
-        public HttpResponseMessage GetById(HttpRequestMessage request,int id)
+        public HttpResponseMessage GetById(HttpRequestMessage request, int id)
         {
             return CreateHttpResponse(request, () =>
             {
@@ -152,6 +155,82 @@ namespace TuanVinhShop.Web.Api
                 response = request.CreateResponse(HttpStatusCode.OK, mapperObject);
                 return response;
             });
+        }
+
+        [Route("export/{id}")]
+        [HttpGet]
+        public HttpResponseMessage ExportProduct(HttpRequestMessage request, int id)
+        {
+            var folderReport = "/Reports";
+            string document = OutExcelAll();
+            return request.CreateErrorResponse(HttpStatusCode.OK, folderReport + "/" + document);
+        }
+
+
+        private string OutExcel(int productId)
+        {
+            var folderReport = "/Reports";
+            string filePath = HttpContext.Current.Server.MapPath(folderReport);
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
+            // template File
+            string templateDocument = HttpContext.Current.Server.MapPath("~/Reports/TemplateForReport/ProductReport.xlsx");
+            string documentName = string.Format("Product-{0}-{1}.xlsx", productId, DateTime.Now.ToString("ddmmyyyy"));
+            string fullPath = Path.Combine(filePath, documentName);
+            //result Output
+            MemoryStream output = new MemoryStream();
+
+            //read template
+            FileStream templateDocumentStream = File.OpenRead(templateDocument);
+            ExcelPackage package = new ExcelPackage(templateDocumentStream);
+            ExcelWorksheet sheet = package.Workbook.Worksheets["ProductReportId"];
+            var product = _productService.GetById(productId);
+            sheet.Cells[6, 1].Value = productId;
+            sheet.Cells[6, 2].Value = product.Name;
+            sheet.Cells[6, 3].Value = product.Alias;
+            sheet.Cells[6, 4].Value = product.Price;
+            sheet.Cells[6, 5].Value = product.CategoryID;
+            sheet.Cells[6, 6].Value = product.Status;
+            package.SaveAs(new FileInfo(fullPath));
+            return documentName;
+        }
+
+        private string OutExcelAll()
+        {
+            var folderReport = "/Reports";
+            string filePath = HttpContext.Current.Server.MapPath(folderReport);
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
+            // template File
+            string templateDocument = HttpContext.Current.Server.MapPath("~/Reports/TemplateForReport/ProductReport.xlsx");
+            string documentName = string.Format("Product-{0}.xlsx", DateTime.Now.ToString("ddmmyyyyss"));
+            string fullPath = Path.Combine(filePath, documentName);
+            //result Output
+            MemoryStream output = new MemoryStream();
+
+            //read template
+            FileStream templateDocumentStream = File.OpenRead(templateDocument);
+            ExcelPackage package = new ExcelPackage(templateDocumentStream);
+            ExcelWorksheet sheet = package.Workbook.Worksheets["ProductReportId"];
+            var product = _productService.GetAll();
+            int i = 0;
+            foreach (var item in product)
+            {
+                i += 1;
+                sheet.Cells[6 + i, 1].Value = item.ID;
+                sheet.Cells[6 + i, 2].Value = item.Name;
+                sheet.Cells[6 + i, 3].Value = item.Alias;
+                sheet.Cells[6 + i, 4].Value = item.Price;
+                sheet.Cells[6 + i, 5].Value = item.CategoryID;
+                sheet.Cells[6 + i, 6].Value = item.Status;
+            }
+            package.SaveAs(new FileInfo(fullPath));
+
+            return documentName;
         }
     }
 }
